@@ -94,17 +94,19 @@ private:
 
 };
 
-/*
+
 template<typename resource_type, typename deleter_type>
 unique_resource(resource_type, deleter_type) -> unique_resource<resource_type, deleter_type>;
-*/
+
 
 // Contruct a unique_resource, only owns it if the resource is not equals to 'invalid_resource'
 template<typename resource_type, typename deleter_type, typename invalid_resource_type = std::decay_t<resource_type>>
 auto make_unique_resource_checked(resource_type&& resource, invalid_resource_type const& invalid_resource, deleter_type&& deleter)
     -> unique_resource<std::decay_t<resource_type>, std::decay_t<deleter_type>>
 {
-    auto res = unique_resource<resource_type, deleter_type>(std::forward<resource_type>(resource), std::forward<deleter_type>(deleter));
+    auto res = unique_resource<std::decay_t<resource_type>, std::decay_t<deleter_type>>(
+        std::forward<resource_type>(resource), std::forward<deleter_type>(deleter));
+
     if (res.get() == invalid_resource)
     {
         res.release();
