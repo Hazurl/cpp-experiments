@@ -2,6 +2,7 @@
 
 #include <cppexp/unique_ressource.hpp>
 #include <cppexp/deleter.hpp>
+#include <cppexp/coroutine.hpp>
 
 int main() {
 
@@ -12,4 +13,5 @@ int main() {
 
     auto ressource2 = cppexp::unique_resource(new int{ 1337 }, cppexp::make_deleter<int>());
 
+    auto cor = cppexp::make_unique_coroutine({});
 }
