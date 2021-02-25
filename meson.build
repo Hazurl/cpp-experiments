@@ -27,6 +27,7 @@ sources = [
     'source/main.cpp',
 
     'source/cppexp/deleter.cpp',
+    'source/cppexp/stop_token.cpp',
 ]
 
 includes = [
