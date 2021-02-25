@@ -2,7 +2,7 @@
 
 compile_program() {
     echo -e \\n\\033[34m$(head -c $(tput cols) < /dev/zero | tr '\0', '=')\\033[0m
-    date +"[%T] Compilation...%n"
+    date +"[%T] Compiling...%n"
 
     meson compile
 }
