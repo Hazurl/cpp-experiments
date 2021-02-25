@@ -86,12 +86,6 @@ public:
         return deleter;
     }
 
-    auto owns() const noexcept
-        -> bool
-    {
-        return handled;
-    }
-
 private:
 
     resource_type resource;

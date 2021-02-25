@@ -10,6 +10,6 @@ int main() {
     auto other = std::move(ressource);
     ressource = std::move(other);
 
-    std::cout << ressource.owns() << '\n';
-    std::cout << other.owns() << '\n';
+    auto ressource2 = cppexp::unique_resource(new int{ 1337 }, cppexp::make_deleter<int>());
+
 }
