@@ -17,6 +17,7 @@ if meson.get_compiler('cpp').get_id() == 'clang'
 
 elif meson.get_compiler('cpp').get_id() == 'gcc'
 	add_project_arguments('-fmax-errors=2', language: 'cpp')
+	add_project_arguments('-fconcepts-diagnostics-depth=4', language: 'cpp')
 endif
 
 # Add supports for coroutines
