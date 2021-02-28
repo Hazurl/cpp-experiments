@@ -6,6 +6,17 @@
 #include <cppexp/deleter.hpp>
 #include <cppexp/coroutine.hpp>
 #include <cppexp/stop_token.hpp>
+#include <cppexp/thread_pool.hpp>
+
+template<typename...arg_types>
+auto print_to_cout(arg_types&&... args)
+    -> void
+{
+    static std::mutex cout_mutex;
+    auto lk = std::scoped_lock(cout_mutex);
+
+    (std::cout << ... << std::forward<arg_types>(args));
+}
 
 int main() {
 
@@ -37,5 +48,22 @@ int main() {
     stop_token.request_stop();
 
     thread.join();
+
+    cppexp::thread_pool<std::function<void()>> thread_pool(4);
+    std::mutex cout_mutex;
+
+    for(int i = 0; i < 10; ++i)
+    {
+        thread_pool.schedule(
+            [i] ()
+            {
+                print_to_cout("+ Starting execution of #", i, " on thread #", std::this_thread::get_id(), "...\n");
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(250ms * ((i * 3) % 5 + 1));
+                print_to_cout("- Stoping execution of #", i, " on thread #", std::this_thread::get_id(), "...\n");
+            });
+    }
+
+    thread_pool.join();
 
 }
