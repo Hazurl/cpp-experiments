@@ -27,7 +27,7 @@ add_project_arguments('-fcoroutines', language: 'cpp')
 sources = [
     'source/main.cpp',
 
-    'source/cppexp/stop_token.cpp',
+    'source/cppexp/multi_jthread.cpp',
 ]
 
 includes = [
