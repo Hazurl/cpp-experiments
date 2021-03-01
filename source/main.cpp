@@ -7,6 +7,7 @@
 #include <cppexp/coroutine.hpp>
 #include <cppexp/stop_token.hpp>
 #include <cppexp/thread_pool.hpp>
+#include <cppexp/generator.hpp>
 
 template<typename...arg_types>
 auto print_to_cout(arg_types&&... args)
@@ -16,6 +17,14 @@ auto print_to_cout(arg_types&&... args)
     auto lk = std::scoped_lock(cout_mutex);
 
     (std::cout << ... << std::forward<arg_types>(args));
+}
+
+cppexp::generator<std::size_t> range(std::size_t from, std::size_t to, std::size_t step = 1)
+{
+    for(; from < to; from += step)
+    {
+        co_yield from;
+    }
 }
 
 int main() {
@@ -65,5 +74,10 @@ int main() {
     }
 
     thread_pool.join();
+
+    for(auto value : range(0, 10, 2))
+    {
+        std::cout << "Yielded: " << value << '\n';
+    }
 
 }
