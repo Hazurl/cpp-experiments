@@ -19,7 +19,6 @@ public:
     auto yield_value(return_type&& value) noexcept
         -> std::suspend_always
     {
-        std::cout << "yield\n";
         return_value = std::addressof(value);
         return std::suspend_always{};
     }
@@ -27,19 +26,18 @@ public:
     auto yield_value(return_type& value) noexcept
         -> std::suspend_always
     {
-        std::cout << "yield\n";
         return_value = std::addressof(value);
         return std::suspend_always{};
     }
 
     auto initial_suspend() const noexcept
     {
-        return std::suspend_never{};
+        return std::suspend_always{};
     }
 
     auto final_suspend() const noexcept
     {
-        return std::suspend_never{};
+        return std::suspend_always{};
     }
 
     auto return_void() const noexcept
@@ -110,7 +108,6 @@ public:
         -> bool
     {
         coroutine->resume();
-        std::cout << "after resume, is done ? " << std::boolalpha << coroutine->done() << '\n';
         if (coroutine->done())
         {
             coroutine->promise().rethrow_if_exception();
