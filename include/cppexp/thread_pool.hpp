@@ -9,10 +9,12 @@
 #include <cppexp/job.hpp>
 #include <cppexp/stop_token.hpp>
 
-namespace cppexp {
+namespace cppexp 
+{
 
 template<job_c job_type>
-class thread_pool {
+class thread_pool 
+{
 public:
 
     explicit thread_pool(std::size_t thread_count = std::thread::hardware_concurrency())

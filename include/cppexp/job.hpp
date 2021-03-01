@@ -2,7 +2,8 @@
 
 #include <functional>
 
-namespace cppexp {
+namespace cppexp 
+{
 
 template<typename return_type>
 auto execute_job_sync(std::function<return_type()> const& job) 
