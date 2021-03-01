@@ -27,7 +27,6 @@ add_project_arguments('-fcoroutines', language: 'cpp')
 sources = [
     'source/main.cpp',
 
-    'source/cppexp/deleter.cpp',
     'source/cppexp/stop_token.cpp',
 ]
 

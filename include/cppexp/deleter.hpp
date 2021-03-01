@@ -23,8 +23,14 @@ auto make_deleter()
 
 
 // Call destroy on the coroutine
+template<typename promise_type = void>
 auto make_coroutine_deleter()
-    -> pure_deleter_t<std::coroutine_handle<>>;
-
+    -> pure_deleter_t<std::coroutine_handle<promise_type>>
+{
+    return [](std::coroutine_handle<promise_type>& coroutine)
+    {
+        coroutine.destroy();
+    };
+}
 
 }
