@@ -86,6 +86,18 @@ public:
         return deleter;
     }
 
+    auto operator*() const noexcept
+        -> resource_type const&
+    {
+        return get();
+    }
+
+    auto operator->() const noexcept
+        -> resource_type const*
+    {
+        return std::addressof(operator*());
+    }
+
 private:
 
     resource_type resource;
