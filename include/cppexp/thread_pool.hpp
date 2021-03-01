@@ -7,7 +7,7 @@
 #include <cassert>
 
 #include <cppexp/job.hpp>
-#include <cppexp/stop_token.hpp>
+#include <cppexp/multi_jthread.hpp>
 
 namespace cppexp 
 {
@@ -27,8 +27,7 @@ public:
                 thread_pool::thread_process, 
                 std::ref(jobs), 
                 std::ref(jobs_mutex), 
-                std::ref(jobs_empty_condition), 
-                std::ref(token));
+                std::ref(jobs_empty_condition));
         }
     }
 
@@ -37,11 +36,8 @@ public:
     auto join()
         -> void
     {
-        token.request_stop();
-        for(auto& thread : threads)
-        {
-            thread.join();
-        }
+        threads.request_stop();
+        threads.join();
     }
 
 
@@ -57,8 +53,8 @@ public:
 
 private:
 
-    static auto thread_process(std::vector<job_type>& jobs, std::mutex& jobs_mutex, 
-        std::condition_variable& jobs_empty_condition, stop_token& token)
+    static auto thread_process(std::stop_token token, std::vector<job_type>& jobs, std::mutex& jobs_mutex, 
+        std::condition_variable& jobs_empty_condition)
         -> void
     {
         while(true)
@@ -85,10 +81,9 @@ private:
         }
     }
 
-    std::vector<std::thread> threads;
+    multi_jthread threads;
     std::vector<job_type> jobs;
     std::mutex jobs_mutex;
-    stop_token token;
     std::condition_variable jobs_empty_condition;
 
 };
