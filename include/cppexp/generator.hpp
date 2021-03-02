@@ -19,14 +19,14 @@ public:
     auto yield_value(return_type&& value) noexcept
         -> std::suspend_always
     {
-        return_value = std::addressof(value);
+        value_to_return = std::addressof(value);
         return std::suspend_always{};
     }
 
     auto yield_value(return_type& value) noexcept
         -> std::suspend_always
     {
-        return_value = std::addressof(value);
+        value_to_return = std::addressof(value);
         return std::suspend_always{};
     }
 
@@ -65,12 +65,12 @@ public:
     auto value() const noexcept
         -> return_type*
     {
-        return return_value;
+        return value_to_return;
     }
 
 private:
 
-    return_type* return_value;
+    return_type* value_to_return;
     std::exception_ptr exception_thrown;
 };
 

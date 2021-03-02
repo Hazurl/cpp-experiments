@@ -29,12 +29,15 @@ cppexp::generator<std::size_t> range(std::size_t from, std::size_t to, std::size
 
 cppexp::task<int> make_task(int i)
 {
+    std::cout << "Start make_task\n";
     co_return i * 2;
 }
 
 cppexp::task<int> make_complex_task(int i)
 {
+    std::cout << "Start make_complex_task\n";
     int j = co_await make_task(i);
+    std::cout << "Resume make_complex_task\n";
     co_return j * 10;
 }
 
@@ -72,6 +75,11 @@ int main() {
     }
 
     auto task = make_complex_task(5);
-    int value = task.operator co_await().await_resume();
-    std::cout << value << '\n';
+    while(!task.is_done())
+    {
+        std::cout << "resume task...\n";
+        task.resume();
+    }
+
+    std::cout << task.value() << '\n';
 }

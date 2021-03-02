@@ -114,10 +114,11 @@ private:
 };
 
 
+template<typename promise_type>
 struct task_awaiter_base
 {
 
-    task_awaiter_base(std::coroutine_handle<> continuation) noexcept
+    task_awaiter_base(std::coroutine_handle<promise_type> continuation) noexcept
         : continuation{ continuation }
     {}
 
@@ -136,7 +137,7 @@ struct task_awaiter_base
         return continuation;
     }
 
-    std::coroutine_handle<> continuation;
+    std::coroutine_handle<promise_type> continuation;
 
 };
 
@@ -149,7 +150,7 @@ class task
 {
 public:
 
-    using promise_type = task_promise<return_type>;
+    using promise_type = details::task_promise<return_type>;
 
     task(unique_coroutine<promise_type> coroutine)
         : coroutine(std::move(coroutine))
@@ -159,12 +160,13 @@ public:
 
     auto operator co_await() const& noexcept
     {
-        struct task_awaiter : details::task_awaiter_base
+        struct task_awaiter : details::task_awaiter_base<promise_type>
         {
             auto await_resume()
                 -> return_type&
             {
                 auto& promise = this->continuation.promise();
+                promise.rethrow_if_exception();
                 return promise.value();
             }
         };
@@ -174,17 +176,45 @@ public:
 
     auto operator co_await() const&& noexcept
     {
-        struct task_awaiter : details::task_awaiter_base
+        struct task_awaiter : details::task_awaiter_base<promise_type>
         {
             auto await_resume()
                 -> return_type&&
             {
                 auto& promise = this->continuation.promise();
+                promise.rethrow_if_exception();
                 return std::move(promise).value();
             }
         };
 
         return task_awaiter{ coroutine.get() };
+    }
+
+    auto resume() const
+    {
+        coroutine->resume();
+        coroutine->promise().rethrow_if_exception();
+        return !coroutine->done();
+    }
+
+    auto is_done() const
+        -> bool
+    {
+        return !*coroutine || coroutine->done();
+    }
+
+    auto value() const&
+        -> return_type&
+    {
+        coroutine->promise().rethrow_if_exception();
+        return coroutine->promise().value();
+    }
+
+    auto value() const&&
+        -> return_type&&
+    {
+        coroutine->promise().rethrow_if_exception();
+        return std::move(coroutine->promise()).value();
     }
 
 private:
