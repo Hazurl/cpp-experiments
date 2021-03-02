@@ -7,6 +7,7 @@
 #include <cppexp/coroutine.hpp>
 #include <cppexp/thread_pool.hpp>
 #include <cppexp/generator.hpp>
+#include <cppexp/task.hpp>
 
 template<typename...arg_types>
 auto print_to_cout(arg_types&&... args)
@@ -24,6 +25,17 @@ cppexp::generator<std::size_t> range(std::size_t from, std::size_t to, std::size
     {
         co_yield from;
     }
+}
+
+cppexp::task<int> make_task(int i)
+{
+    co_return i * 2;
+}
+
+cppexp::task<int> make_complex_task(int i)
+{
+    int j = co_await make_task(i);
+    co_return j * 10;
 }
 
 int main() {
@@ -59,4 +71,7 @@ int main() {
         std::cout << "Yielded: " << value << '\n';
     }
 
+    auto task = make_complex_task(5);
+    int value = task.operator co_await().await_resume();
+    std::cout << value << '\n';
 }
